@@ -192,50 +192,66 @@ const theaters = [{
     }
 ];
 
-// Servidor
+// Levanto servidor
 http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
 
-    // Route System
-    switch (req.url) { //Crea Switch
-        // Home
-        case '/': //Caso Home
+    // RUTAS
+    switch (req.url) { 
+        /* HOME */
+        case '/': 
+
             res.write("Título: Bienvenidos a DH  Movies el mejor sitio para encontrar las mejores peliculas, incluso mucho mejor que Netflix, Cuevana y PopCorn.")
-            res.write('\n') 
-            res.write( `Total de peliculas en cartelera: ${movies.length}`);
+            res.write('\n\n') 
+            res.write('***********************************\n');
+            res.write(`Total de peliculas en cartelera: ${movies.length}`);
+            res.write('\n***********************************')
             res.write('\n\n')
-            res.write("Listado de películas\n\n");
-            let titulos =[]; // variable que recibe los titulos
-            movies.forEach(function(movie){ //con forEach recorro movies
-                titulos.push(movie.title) //con push introduzco cada título dentro de la variable titulos
-                
+            res.write("Listado de películas\n");
+            res.write('--------------------');
+            res.write('\n\n')
+
+            let titulos =[]; 
+            movies.forEach(function(movie){ 
+                titulos.push(movie.title) 
             })
+
             titulos.sort(); // el método .sort ordena alfabeticamente los datos de la variable títulos
             titulos.forEach(function(titulo){
-                res.write(`${titulo}\n`)//Una vez cargados todos los títulos dentro de la variable, la recorro con forEach y pido que por cada iteración lo muestre en pantalla con .write 
+                res.write(`- ${titulo}\n`)
             })
+
             res.write('\n')
-            res.write("Recordá que podés visitar las secciones:\n · En Cartelera \n · Más Votadas \n · Sucursales \n · Contacto \n · Preguntas Frecuentes")
+            res.write("Recordá que podés visitar las secciones:\n\n · En Cartelera \n · Más Votadas \n · Sucursales \n · Contacto \n · Preguntas Frecuentes")
 
             res.end();
+
             break;
-            // En cartelera
+            /* EN CARTELERA */
         case '/en-cartelera':
-            res.write('Titulo:En cartelera\n\n');
+            res.write('************\n')
+            res.write('EN CARTELERA');
+            res.write('\n************\n')
+            res.write('\n\n')
             res.write(`Total de películas en cartelera: ${movies.length}` )
             res.write('\n\n')
             res.write('Listado de peliculas:\n');
+            res.write('--------------------------------------------\n')
             movies.forEach(function(movie){
-                res.write(`Titulo: ${movie.title}`);
-                res.write('\n')
+                res.write(`->> ${movie.title.toUpperCase()} <<-`);
+                res.write('\n\n')
                 res.write('Reseña:')
                 res.write('\n')
                 res.write(movie.overview)
-                res.write('\n\n\n')
+                res.write('\n\n')
+                res.write('--------------------------------------------\n\n')
             })
             res.end();
             break;
+
+            /* MAS VOTADAS */
         case '/mas-votadas':
+
             let votadas = movies.filter(function(movie) //variable que recibe las peliculas filtradas segun la cantidad de votos
             {
                 return movie.vote_average >= 7
@@ -244,33 +260,42 @@ http.createServer((req, res) => {
                 return((a.title < b.title) ? -1 : ((a.title > b.title) ? 1 : 0));
             })
 
-            res.write('Titulo: Mas Votadas\n')
+            res.write('************\n')
+            res.write('MÁS VOTADAS');
+            res.write('\n************\n')
+            res.write('\n')
             res.write(`Total de peliculas en cartelera: ${votadas.length}\n\n`);
+
             let promedio = 0
             votadas.forEach(function(peli){
                 promedio = promedio + peli.vote_average
             })
+
             promedio = promedio/votadas.length
+
             res.write(`\n\n Rating promedio ${promedio.toFixed(2)}\n\n `)
-            res.write('Listado de Peliculas\n')
+            res.write('Listado de peliculas:\n\n');
+            res.write('--------------------------------------------')
+            res.write('\n\n')
             votadas.forEach(function(movie){
-                res.write(`Titulo ${movie.title}\n`)
-                res.write('-----------------------------\n');
+                res.write(`->> ${movie.title.toUpperCase()} <<-`)
+                res.write('\n\n')
                 res.write(`Rating: ${movie.vote_average}\n`)
                 res.write(`Reseña: ${movie.overview}\n\n\n`)
+                res.write('--------------------------------------------\n\n')
             })
             res.end();
             break;
         case '/sucursales':
-            res.write('Titulo: Nuestras Salas\n\n');
+            res.write('**************\n')
+            res.write('NUESTRAS SALAS');
+            res.write('\n**************\n')
+            res.write('\n')
             res.write(`Total de salas: ${theaters.length}` );
+            res.write('\n------------------')
             res.write('\n\n')
             theaters.forEach(function(salas){
-                res.write(`
-                Nombre: ${salas.name}
-                Dirección: ${salas.address}
-                Descripción: ${salas.description}
-                `)
+                res.write(`- ${salas.name.toUpperCase()}\n- Dirección: ${salas.address}\- Descripción: ${salas.description}\n\n`)
             })
 
             res.end();
@@ -284,15 +309,18 @@ http.createServer((req, res) => {
             res.write('Título: Preguntas Frecuentes.\n\n');
             res.write('Total de preguntas: ' + faqs.length);
             res.write('\n\n')
+            res.write('_______________________________________\n\n')
             faqs.forEach(function(preguntas){
                 res.write('Pregunta: ' + preguntas.faq_title);
                 res.write('\n\n');
                 res.write('Respuesta: ' + preguntas.faq_answer);
-                res.write('\n\n')
+                res.write('\n\n');
+                res.write('------------------------------------\n\n')
             })
             res.end();
             break;
         default:
             res.end('404 not found')
     }
+    
 }).listen(3030, 'localhost', () => console.log('Server running in 3030 port'));
